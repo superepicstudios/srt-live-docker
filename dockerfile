@@ -1,4 +1,4 @@
-# Builder
+# Build
 
 FROM alpine:latest as builder
 RUN apk update && apk upgrade
@@ -15,9 +15,9 @@ WORKDIR /tmp/srt-live
 RUN echo "#include <ctime>"|cat - slscore/common.cpp > /tmp/out && mv /tmp/out slscore/common.cpp
 RUN make
 
-# Runner
+# Run
 
-FROM alpine:latest
+FROM alpine:latest as runner
 ENV LD_LIBRARY_PATH /lib:/usr/lib:/usr/local/lib64
 
 RUN apk update && apk upgrade
