@@ -1,0 +1,12 @@
+# Container data
+
+data
+
+# Linux
+
+.Trash*
+lost+found
+
+# macOS
+
+.DS_Store

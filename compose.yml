@@ -1,0 +1,11 @@
+services:
+
+  srt-live:
+    container_name: srt-live
+    image: ghcr.io/superepicstudios/srt-live
+    build: .
+    ports:
+      - "1935:1935/udp"
+    # volumes:
+    #   - ./data/srt-live/logs:/logs
+    #   - ./data/srt-live/sls.conf:/etc/sls/sls.conf
