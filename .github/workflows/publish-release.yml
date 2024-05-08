@@ -4,46 +4,52 @@ on:
   release:
     types: [published]
 
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository_owner }}/srt-live
+
 jobs:
 
   publish:
-    name: "Publish"
+    name: Publish
     runs-on: ubuntu-latest
     permissions:
-      id-token: write
       contents: read
-      attestations: write
+      id-token: write
       packages: write
+      attestations: write
     steps:
-      - name: "Checkout"
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: "GitHub Container Registry Login"
+      - name: GitHub Container Registry Login
         uses: docker/login-action@v3
         with:
-          registry: ghcr.io
-          username: ${{github.actor}}
-          password: ${{secrets.GITHUB_TOKEN}}
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: "Extract Metadata"
+      - name: Extract Metadata
         uses: docker/metadata-action@v5
         id: metadata
         with:
-          images: superepicstudios/srt-live
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
-      - name: "Build & Push"
+      - name: Build & Push
         uses: docker/build-push-action@v5
         id: push
         with:
           context: .
-          file: ./dockerfile
           push: true
-          tags: ${{steps.metadata.outputs.tags}}
-          labels: ${{steps.metadata.outputs.labels}}
+          tags: ${{ steps.metadata.outputs.tags }}
+          labels: ${{ steps.metadata.outputs.labels }}
+
+      - name: Image Digest
+        run: echo ${{ steps.push.outputs.digest }}
 
       - name: Artifact Attestation
         uses: actions/attest-build-provenance@v1
         with:
-          subject-name: ${{env.REGISTRY}}/${{env.IMAGE_NAME}}
-          subject-digest: ${{steps.push.outputs.digest}}
+          subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          subject-digest: ${{ steps.push.outputs.digest }}
           push-to-registry: true
